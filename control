@@ -1,0 +1,9 @@
+Package: com.ps.tinyowl
+Name: TinyOwl
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Pseudo-lightweight system-wide dark mode
+Maintainer: PoomSmart
+Author: PoomSmart
+Section: Tweaks
