@@ -12,6 +12,7 @@
 + (UIColor *)quaternaryLabelColor;
 + (UIColor *)systemBackgroundColor;
 + (UIColor *)systemGray4Color;
++ (UIColor *)systemGray6Color;
 + (UIColor *)secondarySystemBackgroundColor;
 + (UIColor *)systemGroupedBackgroundColor;
 + (UIColor *)secondarySystemGroupedBackgroundColor;
@@ -128,6 +129,22 @@ UIColor *overrideWhite = nil;
 
 %end
 
+%hook UIViewController
+
+- (UIUserInterfaceStyle)preferredUserInterfaceStyle {
+	return UIUserInterfaceStyleDark;
+}
+
+%end
+
+%hook UIView
+
+- (NSInteger)_accessibilityResolvedInterfaceStyleForCurrentPreference {
+	return 2;
+}
+
+%end
+
 %hook UIColor
 
 + (UIColor *)tableBackgroundColor {
@@ -179,6 +196,11 @@ UIColor *overrideWhite = nil;
 %new
 + (UIColor *)systemGray4Color {
 	onceColor(@"systemGray4", 0.2274509803921569, 0.2274509803921569, 0.2352941176470588, 1.0);
+}
+
+%new
++ (UIColor *)systemGray6Color {
+	onceColor(@"systemGray6", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
 }
 
 + (UIColor *)blackColor {
@@ -329,6 +351,14 @@ UIColor *overrideWhite = nil;
 
 %end
 
+%hook _UILabelVisualStyle_iOS
+
+- (BOOL)supportsUserInterfaceStyle {
+	return YES;
+}
+
+%end
+
 %hook _UIAtomTextView
 
 + (UIColor *)defaultTextColor {
@@ -347,6 +377,10 @@ UIColor *overrideWhite = nil;
 
 %hook UITableConstants_IOS
 
+- (BOOL)supportsUserInterfaceStyles {
+	return YES;
+}
+
 - (UIColor *)defaultTextColorForCell:(UITableViewCell *)cell inTableView:(UITableView *)tableView {
 	if (cell.style != UITableViewCellStyleValue2) {
 		return [UIColor labelColor];
@@ -359,6 +393,12 @@ UIColor *overrideWhite = nil;
 }
 
 - (UIColor *)defaultHeaderTextColorForTableViewStyle:(UITableViewStyle)style {
+	return style ? [UIColor _groupTableHeaderFooterTextColor] : [UIColor _plainTableHeaderFooterTextColor];
+}
+
+// tvOS style
+%new
+- (UIColor *)defaultHeaderTextColorForTableViewStyle:(UITableViewStyle)style userInterfaceStyle:(UIUserInterfaceStyle)userInterfaceStyle {
 	return style ? [UIColor _groupTableHeaderFooterTextColor] : [UIColor _plainTableHeaderFooterTextColor];
 }
 
@@ -489,6 +529,28 @@ UIColor *overrideWhite = nil;
 
 %end
 
+%hook _UIPreviewPresentationController
+
+- (void)_configureActionSheetChromeViews {
+	overrideWhite = [UIColor _controlForegroundColor];
+	%orig;
+	overrideWhite = nil;
+}
+
+%end
+
+%hook UITableViewCell
+
+- (UIColor *)_multiselectBackgroundColor {
+	return [UIColor systemGray6Color];
+}
+
+- (UIColor *)_contentBackgroundColor {
+	return [self backgroundColor];
+}
+
+%end
+
 %hook UISearchBar
 
 - (UIColor *)_colorForComponent:(NSUInteger)component disabled:(BOOL)disabled {
@@ -496,6 +558,22 @@ UIColor *overrideWhite = nil;
 	UIColor *color = %orig;
 	noBlack = NO;
 	return color;
+}
+
+%end
+
+/*%hook UIStatusBarNewUIStyleAttributes
+
+- (id)initWithRequest:(UIStatusBarStyleRequest *)request backgroundColor:(UIColor *)backgroundColor foregroundColor:(UIColor *)foregroundColor hasBusyBackground:(BOOL)busy {
+	return %orig(request, backgroundColor, [UIColor labelColor], busy);
+}
+
+%end*/
+
+%hook _UINavigationBarVisualStyle
+
+- (UIColor *)defaultTitleColorForUserInterfaceStyle:(NSInteger)userInterfaceStyle barStyle:(NSInteger)barStyle {
+	return [UIColor labelColor]; // unlike iOS 13
 }
 
 %end
