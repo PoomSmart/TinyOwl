@@ -1,89 +1,7 @@
-#import "../PS.h"
-#import <UIKit/UIColor+Private.h>
-
-@interface UIColor (MyPrivate)
-@property (getter=_systemColorName, setter=_setSystemColorName:, nonatomic, retain) NSString *systemColorName;
-@end
-
-@interface UIColor (TO)
-+ (UIColor *)labelColor;
-+ (UIColor *)secondaryLabelColor;
-+ (UIColor *)tertiaryLabelColor;
-+ (UIColor *)quaternaryLabelColor;
-+ (UIColor *)systemBackgroundColor;
-+ (UIColor *)systemGray4Color;
-+ (UIColor *)systemGray6Color;
-+ (UIColor *)secondarySystemBackgroundColor;
-+ (UIColor *)systemGroupedBackgroundColor;
-+ (UIColor *)secondarySystemGroupedBackgroundColor;
-+ (UIColor *)tableBackgroundColor;
-+ (UIColor *)_controlForegroundColor;
-+ (UIColor *)_textFieldBackgroundColor;
-+ (UIColor *)_textFieldDisabledBackgroundColor;
-+ (UIColor *)_groupTableHeaderFooterTextColor;
-+ (UIColor *)_plainTableHeaderFooterTextColor;
-+ (UIColor *)_searchBarBackgroundColor;
-@end
-
-@interface UITableViewCell (Private)
-- (UITableViewCellStyle)style;
-@end
-
-@interface UITableViewHeaderFooterView (Private)
-- (bool)floating;
-@end
-
-@interface UITableConstants_IOS : NSObject
-- (UIColor *)defaultHeaderFooterBackgroundColorForView:(UITableViewHeaderFooterView *)view inTableView:(UITableView *)tableView;
-@end
-
-@interface UIDeviceRGBColor : UIColor
-@end
-
-@interface UICachedDeviceRGBColor : UIDeviceRGBColor
-@end
-
-@interface UIDeviceWhiteColor : UIColor
-@end
-
-@interface UICachedDeviceWhiteColor : UIDeviceWhiteColor
-@end
-
-@interface UIAlertControllerVisualStyle : NSObject
-- (UIColor *)titleLabelColor;
-@end
-
-@interface _UIRefreshControlModernContentView : UIView
-@end
-
-@interface _UIAlertControlleriOSActionSheetCancelBackgroundView : UIView
-@end
-
-@interface UIStatusBarStyleRequest : NSObject
-@end
-
-@interface UIStatusBarNewUIStyleAttributes : NSObject
-@end
+#import "Header.h"
 
 BOOL noBlack = NO;
 UIColor *overrideWhite = nil;
-
-#define onceColor(colorName, r, g, b, a) \
-	static UIColor *color = nil; \
-    static dispatch_once_t onceToken; \
-    dispatch_once(&onceToken, ^{ \
-        color = [[%c(UICachedDeviceRGBColor) alloc] initWithRed:r green:g blue:b alpha:a]; \
-		[color _setSystemColorName:colorName]; \
-    }); \
-    return color
-
-#define onceColorWhite(w, a) \
-	static UIColor *color = nil; \
-    static dispatch_once_t onceToken; \
-    dispatch_once(&onceToken, ^{ \
-        color = [[%c(UICachedDeviceWhiteColor) alloc] initWithWhite:w alpha:a]; \
-    }); \
-    return color
 
 %hook _UIBackdropViewSettings
 
@@ -228,7 +146,7 @@ UIColor *overrideWhite = nil;
 
 %new
 + (UIColor *)systemBackgroundColor {
-	onceColor(@"systemBackgroundColor", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
+	onceColorWhite(0, 1);
 }
 
 %new
@@ -301,14 +219,7 @@ UIColor *overrideWhite = nil;
 %hook _UINavigationBarVisualProviderModernIOS
 
 - (NSDictionary *)_defaultTitleAttributes {
-	NSDictionary *defaultAttrs = %orig;
-	if (defaultAttrs) {
-		NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
-		[attrs addEntriesFromDictionary:defaultAttrs];
-		attrs[NSForegroundColorAttributeName] = [UIColor labelColor];
-		return attrs;
-	}
-	return defaultAttrs;
+	withForegroundColor(%orig);
 }
 
 %end
