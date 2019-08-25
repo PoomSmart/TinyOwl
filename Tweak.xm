@@ -162,7 +162,7 @@ UIColor *overrideWhite = nil;
 %new
 + (UIColor *)secondarySystemGroupedBackgroundColor {
 	// secondarySystemGroupedBackground
-	onceColor(@"secondarySystemGroupedBackground", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
+	onceColor(@"secondarySystemGroupedBackground", 0.1411764705882353, 0.1411764705882353, 0.1490196078431373, 1.0);
 }
 
 %new
@@ -376,7 +376,6 @@ UIColor *overrideWhite = nil;
 - (id)initWithFrame:(CGRect)frame {
 	self = %orig;
 	if (self) {
-		self.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
 		((UIView *)[self valueForKey:@"backgroundView"]).backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
 	}
 	return self;
