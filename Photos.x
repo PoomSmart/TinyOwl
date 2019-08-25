@@ -1,5 +1,8 @@
 #import "Header.h"
 
+@interface PXGadgetViewController : UIViewController
+@end
+
 %hook PUFlatWhiteInterfaceTheme
 
 - (UIColor *)photoCollectionViewBackgroundColor {
@@ -79,5 +82,6 @@
 %end
 
 %ctor {
+    NSLog(@"TinyOwl Photos init");
     %init;
 }

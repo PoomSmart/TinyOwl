@@ -10,7 +10,8 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = TinyOwl
 
-TinyOwl_FILES = Tweak.xm Photos.xm
+TinyOwl_FILES = Tweak.x Photos.x
+TinyOwl_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

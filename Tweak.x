@@ -65,6 +65,14 @@ UIColor *overrideWhite = nil;
 
 %hook UIColor
 
++ (UIColor *)_systemColorWithName:(NSString *)name {
+	UIColor *color = nil;
+	@try {
+		color = %orig(name);
+	} @catch (NSException *e) {}
+	return color;
+}
+
 + (UIColor *)tableBackgroundColor {
 	onceColorWhite(0, 1);
 }
@@ -113,12 +121,12 @@ UIColor *overrideWhite = nil;
 
 %new
 + (UIColor *)systemGray4Color {
-	onceColor(@"systemGray4", 0.2274509803921569, 0.2274509803921569, 0.2352941176470588, 1.0);
+	onceColor(@"systemGray4Color", 0.2274509803921569, 0.2274509803921569, 0.2352941176470588, 1.0);
 }
 
 %new
 + (UIColor *)systemGray6Color {
-	onceColor(@"systemGray6", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
+	onceColor(@"systemGray6Color", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
 }
 
 + (UIColor *)blackColor {
@@ -151,7 +159,7 @@ UIColor *overrideWhite = nil;
 
 %new
 + (UIColor *)secondarySystemBackgroundColor {
-	onceColor(@"secondarySystemBackground", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
+	onceColor(@"secondarySystemBackgroundColor", 0.1098039215686274, 0.1098039215686274, 0.1176470588235294, 1.0);
 }
 
 %new
@@ -162,30 +170,30 @@ UIColor *overrideWhite = nil;
 %new
 + (UIColor *)secondarySystemGroupedBackgroundColor {
 	// secondarySystemGroupedBackground
-	onceColor(@"secondarySystemGroupedBackground", 0.1411764705882353, 0.1411764705882353, 0.1490196078431373, 1.0);
+	onceColor(@"secondarySystemGroupedBackgroundColor", 0.1411764705882353, 0.1411764705882353, 0.1490196078431373, 1.0);
 }
 
 %new
 + (UIColor *)secondaryLabelColor {
 	// secondaryLabel
-	onceColor(@"secondaryLabel", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.6);
+	onceColor(@"secondaryLabelColor", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.6);
 }
 
 %new
 + (UIColor *)tertiaryLabelColor {
 	// tertiaryLabel
-	onceColor(@"tertiaryLabel", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.3);
+	onceColor(@"tertiaryLabelColor", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.3);
 }
 
 %new
 + (UIColor *)quaternaryLabelColor {
 	// quaternaryLabel
-	onceColor(@"quaternaryLabel", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.18);
+	onceColor(@"quaternaryLabelColor", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.18);
 }
 
 %new
 + (UIColor *)_controlForegroundColor {
-	onceColor(@"controlForeground", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.3);
+	onceColor(@"controlForegroundColor", 0.9215686274509803, 0.9215686274509803, 0.9607843137254902, 0.3);
 }
 
 %new
@@ -422,6 +430,34 @@ UIColor *overrideWhite = nil;
 
 %end
 
+%hook UIAlertControllerVisualStyleActionSheet
+
+- (UIColor *)titleLabelColor {
+	return [UIColor labelColor];
+}
+
+- (UIColor *)messageLabelColor {
+	return [UIColor secondaryLabelColor];
+}
+
+%end
+
+%hook UIAlertControllerVisualStyleActionSheetInline
+
+- (UIColor *)tintColorForAlertController:(id)arg1 {
+	return [UIColor labelColor];
+}
+
+%end
+
+%hook _UIShareExtensionRemoteViewController
+
++ (BOOL)shouldPropagateAppearanceCustomizations {
+	return YES;
+}
+
+%end
+
 %hook _UIRefreshControlModernContentView
 
 - (UIColor *)_effectiveTintColor {
@@ -518,5 +554,6 @@ UIColor *overrideWhite = nil;
 }
 
 %ctor {
+	NSLog(@"TinyOwl Main init");
 	%init;
 }
